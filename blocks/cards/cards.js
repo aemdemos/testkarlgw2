@@ -1,23 +1,18 @@
+import { createOptimizedPicture } from '../../scripts/aem.js';
 
 export default function decorate(block) {
-    // Add class to the outer div
-    block.classList.add('testblock');
-
-    // Select all card items
-    const cards = block.querySelectorAll('.cards > div');
-
-    cards.forEach(card => {
-        // Add card class to each card
-        card.classList.add('testblock-card');
-
-        // Structure the card content
-        const [imageContainer, textContainer] = card.children;
-        imageContainer.classList.add('testblock-image-container');
-        textContainer.classList.add('testblock-text-container');
-
-        const [category, description, link] = textContainer.children;
-        category.classList.add('testblock-category');
-        description.classList.add('testblock-description');
-        link.classList.add('testblock-link');
+  /* change to ul, li */
+  const ul = document.createElement('ul');
+  [...block.children].forEach((row) => {
+    const li = document.createElement('li');
+    while (row.firstElementChild) li.append(row.firstElementChild);
+    [...li.children].forEach((div) => {
+      if (div.children.length === 1 && div.querySelector('picture')) div.className = 'cards-card-image';
+      else div.className = 'cards-card-body';
     });
+    ul.append(li);
+  });
+  ul.querySelectorAll('img').forEach((img) => img.closest('picture').replaceWith(createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }])));
+  block.textContent = '';
+  block.append(ul);
 }
